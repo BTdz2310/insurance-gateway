@@ -29,13 +29,20 @@ export class AdminService implements OnModuleInit {
       );
       return;
     }
-    const count = await this.prisma.admin.count();
-    if (count > 0) return;
+    const existing = await this.prisma.admin.findUnique({
+      where: { username: env.ADMIN_USERNAME },
+    });
+    if (existing) return;
 
     const passwordHash = await bcrypt.hash(env.ADMIN_PASSWORD, 10);
-    await this.prisma.admin.create({
-      data: { username: env.ADMIN_USERNAME, passwordHash },
-    });
-    this.logger.log(`Seeded initial admin: ${env.ADMIN_USERNAME}`);
+    try {
+      await this.prisma.admin.create({
+        data: { username: env.ADMIN_USERNAME, passwordHash },
+      });
+      this.logger.log(`Seeded initial admin: ${env.ADMIN_USERNAME}`);
+    } catch (e: any) {
+      if (e?.code === 'P2002') return;
+      throw e;
+    }
   }
 }
