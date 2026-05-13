@@ -46,7 +46,6 @@ async function bootstrap() {
     .addTag('order', 'Tạo đơn & tra cứu đơn bảo hiểm')
     .addTag('callback', 'Webhook từ PVI khi đơn được cấp')
     .addTag('transaction', 'Tra cứu & đối soát giao dịch (partner)')
-    .addTag('admin', 'Quản trị partner & log')
     .addBearerAuth(
       { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
       'admin-jwt',

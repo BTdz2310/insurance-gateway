@@ -9,8 +9,13 @@ import {
   Query,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { PartnerStatus } from '@prisma/client';
+import {
+  ApiBody,
+  ApiExcludeController,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { PrismaService } from '../prisma/prisma.service';
 import { PartnerService } from '../partner-auth/partner.service';
 import { AdminService } from '../admin-auth/admin.service';
@@ -25,6 +30,7 @@ import { RotatePartnerSecretResultDto } from './dto/rotate-partner-secret-result
 import { UpdatePartnerStatusDto } from './dto/update-partner-status.dto';
 import { UpdatePartnerDto } from './dto/update-partner.dto';
 
+@ApiExcludeController()
 @ApiTags('admin')
 @Controller('admin')
 export class AdminController {
@@ -64,7 +70,7 @@ export class AdminController {
       clientId: body.clientId,
       rateLimit: body.rateLimit,
       allowedIps: body.allowedIps,
-      status: body.status as PartnerStatus | undefined,
+      status: body.status,
     });
 
     return {
@@ -107,22 +113,21 @@ export class AdminController {
     @Param('id') id: string,
     @Body() body: UpdatePartnerStatusDto,
   ) {
-    return this.partnerService.updateStatus(id, body.status as PartnerStatus);
+    return this.partnerService.updateStatus(id, body.status);
   }
 
   @Patch('partners/:id')
   @ApiAdminAuth()
-  @ApiOperation({ summary: 'Cập nhật đối tác (name / rateLimit / allowedIps / status)' })
+  @ApiOperation({
+    summary: 'Cập nhật đối tác (name / rateLimit / allowedIps / status)',
+  })
   @ApiBody({ type: UpdatePartnerDto })
-  async updatePartner(
-    @Param('id') id: string,
-    @Body() body: UpdatePartnerDto,
-  ) {
+  async updatePartner(@Param('id') id: string, @Body() body: UpdatePartnerDto) {
     const result = await this.partnerService.updatePartner(id, {
       name: body.name,
       rateLimit: body.rateLimit,
       allowedIps: body.allowedIps,
-      status: body.status as PartnerStatus | undefined,
+      status: body.status,
     });
     if (!result) throw new NotFoundException();
     return result;
