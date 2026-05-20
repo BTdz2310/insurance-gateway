@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ApiReferenceOptions } from '@scalar/nestjs-api-reference';
 import { json, urlencoded } from 'express';
@@ -53,6 +53,10 @@ async function bootstrap() {
 
   const swaggerConfig = builder.build();
 
+  // Lắng nghe SIGTERM/SIGINT để NestJS chạy onModuleDestroy (đóng Redis,
+  // Prisma) trước khi tắt — tránh cắt request khi node bị thay trong HA.
+  app.enableShutdownHooks();
+
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
@@ -72,7 +76,7 @@ async function bootstrap() {
 
   const port = Number(process.env.PORT ?? 3000);
   await app.listen(port);
-  console.log(`Docs: http://localhost:${port}/docs`);
+  Logger.log(`Docs: http://localhost:${port}/docs`, 'Bootstrap');
 
   // Signal PM2 rằng app đã sẵn sàng nhận traffic (dùng với wait_ready: true)
   if (process.send) process.send('ready');

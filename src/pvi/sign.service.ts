@@ -2,6 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { PviConfig } from '../config/pvi.config';
 import { md5, timingSafeEqual } from '../common/crypto/md5.util';
 
+/**
+ * Chữ ký request gọi sang PVI.
+ *
+ * trong đặc tả API của PVI (API_Document_South-AZ_Plus): mọi request phải kèm
+ * Sign = MD5(Key + tham_số...). Không thể đổi sang SHA-256 vì sẽ không khớp
+ * chữ ý PVI verify ở phía họ. MD5 ở đây dùng cho mục đích chữ ký theo hợp đồng
+ * tích hợp (HMAC-like với shared Key), KHÔNG dùng để hash mật khẩu hay dữ liệu
+ * nhạy cảm. Hotspot này có thể đánh dấu "Safe — required by 3rd-party spec".
+ */
 @Injectable()
 export class SignService {
   constructor(private readonly cfg: PviConfig) {}
