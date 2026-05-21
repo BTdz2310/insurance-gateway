@@ -1,4 +1,5 @@
 import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import {
   ApiBody,
   ApiCreatedResponse,
@@ -25,6 +26,7 @@ export class OrderController {
   ) {}
 
   @Post()
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @ApiOperation({
     summary: 'Tạo đơn bảo hiểm TNDS',
     description:

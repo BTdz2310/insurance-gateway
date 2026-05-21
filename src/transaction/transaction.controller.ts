@@ -9,6 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { Request } from 'express';
 import { TxStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
@@ -19,6 +20,7 @@ import { ApiPartnerAuth } from '../common/decorators/api-partner-auth.decorator'
 @ApiTags('transaction')
 @ApiPartnerAuth()
 @UseGuards(PartnerAuthGuard)
+@Throttle({ default: { limit: 30, ttl: 60_000 } })
 @Controller('transaction')
 export class TransactionController {
   constructor(

@@ -1,5 +1,6 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { PviClient } from '../pvi/pvi.client';
 import { QuoteDto, QuoteResultDto } from './dto/quote.dto';
 import { FeeInput } from '../pvi/dto/fee.dto';
@@ -9,6 +10,7 @@ import { ApiPartnerAuth } from '../common/decorators/api-partner-auth.decorator'
 @ApiTags('quote')
 @ApiPartnerAuth()
 @UseGuards(PartnerAuthGuard)
+@Throttle({ default: { limit: 30, ttl: 60_000 } })
 @Controller('api/pvi/quote')
 export class QuoteController {
   constructor(private readonly pvi: PviClient) {}

@@ -9,6 +9,7 @@ import {
   Query,
   UnauthorizedException,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import {
   ApiBody,
   ApiExcludeController,
@@ -32,6 +33,7 @@ import { UpdatePartnerDto } from './dto/update-partner.dto';
 
 @ApiExcludeController()
 @ApiTags('admin')
+@Throttle({ default: { limit: 30, ttl: 60_000 } })
 @Controller('admin')
 export class AdminController {
   constructor(
@@ -42,6 +44,7 @@ export class AdminController {
   ) {}
 
   @Post('auth/login')
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @ApiOperation({ summary: 'Admin đăng nhập' })
   @ApiBody({ type: LoginDto })
   @ApiOkResponse({ type: LoginResultDto })

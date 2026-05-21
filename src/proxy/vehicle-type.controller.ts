@@ -1,5 +1,6 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { PviClient } from '../pvi/pvi.client';
 import { VehicleTypeItemDto, VehicleTypeQueryDto } from './dto/vehicle-type-query.dto';
 import { PartnerAuthGuard } from '../partner-auth/partner-auth.guard';
@@ -8,6 +9,7 @@ import { ApiPartnerAuth } from '../common/decorators/api-partner-auth.decorator'
 @ApiTags('catalog')
 @ApiPartnerAuth()
 @UseGuards(PartnerAuthGuard)
+@Throttle({ default: { limit: 30, ttl: 60_000 } })
 @Controller('api/pvi/vehicle-type')
 export class VehicleTypeController {
   constructor(private readonly pvi: PviClient) {}

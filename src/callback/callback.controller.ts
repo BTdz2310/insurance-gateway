@@ -1,11 +1,13 @@
 import { Body, Controller, Logger, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { SignService } from '../pvi/sign.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuditService } from '../audit/audit.service';
 import { CallbackPayload } from '../pvi/dto/callback.dto';
 
 @ApiTags('callback')
+@Throttle({ default: { limit: 60, ttl: 60_000 } })
 @Controller('pvi/callback')
 export class CallbackController {
   private readonly logger = new Logger(CallbackController.name);

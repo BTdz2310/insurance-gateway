@@ -6,6 +6,7 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { PrismaService } from '../prisma/prisma.service';
 import { PviClient } from '../pvi/pvi.client';
 import { PartnerAuthGuard } from '../partner-auth/partner-auth.guard';
@@ -14,6 +15,7 @@ import { ApiPartnerAuth } from '../common/decorators/api-partner-auth.decorator'
 @ApiTags('order')
 @ApiPartnerAuth()
 @UseGuards(PartnerAuthGuard)
+@Throttle({ default: { limit: 30, ttl: 60_000 } })
 @Controller('api/pvi/order')
 export class PolicyController {
   constructor(

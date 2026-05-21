@@ -1,5 +1,6 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { PviClient } from '../pvi/pvi.client';
 import { CategoryInput } from '../pvi/dto/category.dto';
 import { CatalogItemDto, CatalogQueryDto } from './dto/catalog-query.dto';
@@ -9,6 +10,7 @@ import { ApiPartnerAuth } from '../common/decorators/api-partner-auth.decorator'
 @ApiTags('catalog')
 @ApiPartnerAuth()
 @UseGuards(PartnerAuthGuard)
+@Throttle({ default: { limit: 30, ttl: 60_000 } })
 @Controller('api/pvi/catalog')
 export class CatalogController {
   constructor(private readonly pvi: PviClient) {}
@@ -16,10 +18,14 @@ export class CatalogController {
   @Post()
   @ApiOperation({
     summary: 'Lấy danh mục PVI',
-    description: 'Tra cứu danh sách loại xe, hãng xe, dòng xe, mục đích sử dụng... Dùng để điền dropdown form.',
+    description:
+      'Tra cứu danh sách loại xe, hãng xe, dòng xe, mục đích sử dụng... Dùng để điền dropdown form.',
   })
   @ApiBody({ type: CatalogQueryDto })
-  @ApiOkResponse({ type: [CatalogItemDto], description: 'Danh sách { Value, Text }' })
+  @ApiOkResponse({
+    type: [CatalogItemDto],
+    description: 'Danh sách { Value, Text }',
+  })
   getCategory(@Body() body: CatalogQueryDto) {
     const input: CategoryInput = {
       parent_value: body.parent_value ?? '',

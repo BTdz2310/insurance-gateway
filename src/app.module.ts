@@ -17,8 +17,8 @@ import { HealthModule } from './health/health.module';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
-    // Global rate limit: 100 req / 60s / IP. Partner endpoints có rate-limit
-    // chặt hơn riêng ở [[partner-auth]]; cái này là baseline chống abuse.
+    // 1 throttler duy nhất — limit mặc định cho mọi endpoint.
+    // Các endpoint nhạy cảm override bằng @Throttle({ default: { limit, ttl } }).
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 100 }]),
     PrismaModule,
     AuditModule,

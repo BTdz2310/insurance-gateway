@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { createHash, createHmac, randomUUID } from 'crypto';
+import { SkipThrottle } from '@nestjs/throttler';
 
 const HTML = `<!DOCTYPE html>
 <html lang="vi">
@@ -147,6 +148,7 @@ interface SignBody {
   body: string;
 }
 
+@SkipThrottle()
 @Controller('dev')
 export class DevController {
   @Get('signer')

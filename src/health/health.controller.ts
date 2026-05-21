@@ -7,6 +7,7 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
+import { SkipThrottle } from '@nestjs/throttler';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../partner-auth/redis.service';
 
@@ -29,6 +30,7 @@ interface HealthReport {
  * Không xác thực: probe của PVI gọi không kèm credential.
  */
 @ApiExcludeController()
+@SkipThrottle()
 @Controller('health')
 export class HealthController {
   private readonly logger = new Logger(HealthController.name);
