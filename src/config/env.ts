@@ -15,6 +15,7 @@ const envSchema = z.object({
 
   DATABASE_URL: z.string().min(1),
   PORT: z.coerce.number().default(3000),
+  PUBLIC_BASE_URL: z.string().url().default('http://localhost:3000'),
 
   CATEGORY_CACHE_TTL_SEC: z.coerce.number().default(21600),
   RECONCILE_INTERVAL_MIN: z.coerce.number().default(5),

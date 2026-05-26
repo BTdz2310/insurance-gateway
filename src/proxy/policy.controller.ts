@@ -11,6 +11,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { PviClient } from '../pvi/pvi.client';
 import { PartnerAuthGuard } from '../partner-auth/partner-auth.guard';
 import { ApiPartnerAuth } from '../common/decorators/api-partner-auth.decorator';
+import { PdfStorageService } from '../storage/pdf-storage.service';
 
 @ApiTags('order')
 @ApiPartnerAuth()
@@ -21,6 +22,7 @@ export class PolicyController {
   constructor(
     private readonly prisma: PrismaService,
     private readonly pvi: PviClient,
+    private readonly pdfStorage: PdfStorageService,
   ) {}
 
   @Get(':maGiaodich')
@@ -81,7 +83,7 @@ export class PolicyController {
         paymentUrl: tx.paymentUrl,
         policyNumber: tx.policyNumber,
         serialNumber: tx.serialNumber,
-        pdfUrl: tx.pdfUrl,
+        pdfUrl: tx.pdfUrl ? this.pdfStorage.publicUrl(maGiaodich) : null,
       };
     }
 
@@ -116,7 +118,7 @@ export class PolicyController {
           paymentUrl: tx.paymentUrl,
           policyNumber: result.PolicyNumber,
           serialNumber: result.SerialNumber,
-          pdfUrl: result.URL,
+          pdfUrl: result.URL ? this.pdfStorage.publicUrl(maGiaodich) : null,
         };
       }
     } catch {

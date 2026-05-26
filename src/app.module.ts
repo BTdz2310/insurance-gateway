@@ -15,6 +15,7 @@ import { AdminAuthModule } from './admin-auth/admin-auth.module';
 import { TransactionModule } from './transaction/transaction.module';
 import { DevModule } from './dev/dev.module';
 import { HealthModule } from './health/health.module';
+import { StorageModule } from './storage/storage.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { HealthModule } from './health/health.module';
     TransactionModule,
     DevModule,
     HealthModule,
+    StorageModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
